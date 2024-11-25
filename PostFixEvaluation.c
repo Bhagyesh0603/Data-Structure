@@ -1,72 +1,80 @@
 #include <stdio.h>
-#define MAXSTACK 100
-#define POSTFIXSIZE 100
-int stack[MAXSTACK];
+#include <ctype.h>
+#include <stdlib.h>
+
+#define MAX 100  // Maximum size of the stack
+
+// Stack structure
+int stack[MAX];
 int top = -1;
-void push(int item)
-{
- if (top >= MAXSTACK - 1) {
- printf("stack over flow");
- return;
- }
- else {
- top = top + 1;
- stack[top] = item;
- }
+
+// Push function
+void push(int value) {
+    if (top == MAX - 1) {
+        printf("Stack Overflow\n");
+        exit(1);
+    }
+    stack[++top] = value;
 }
-int pop()
-{
- int item;
- if (top < 0)
- printf("stack under flow");
- else {
- item = stack[top];
- top = top - 1;
- return item;
- }
+
+// Pop function
+int pop() {
+    if (top == -1) {
+        printf("Stack Underflow\n");
+        exit(1);
+    }
+    return stack[top--];
 }
-void EvalPostfix(char postfix[])
-{
- int i;
- char ch;
- int val;
- int A, B;
- for (i = 0; postfix[i] != ')'; i++) {
- ch = postfix[i];
- if (isdigit(ch))
- push(ch - '0');
- else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
- A = pop();
- B = pop();
- switch (ch)
- {
- case '*':val = B * A;
- break;
-case '/':val = B / A;
- break;
- case '+':val = B + A;
- break;
- case '-':val = B - A;
- break;
- }
- push(val);
- }
- }
- printf(" \n Result of expression evaluation : %d \n", pop());
+
+// Function to evaluate a postfix expression
+int evaluatePostfix(char* expression) {
+    for (int i = 0; expression[i] != '\0'; i++) {
+        char ch = expression[i];
+
+        // If the character is a digit, push it to the stack
+        if (isdigit(ch)) {
+            push(ch - '0');  // Convert char to integer
+        } 
+        // If the character is an operator, pop two elements, perform the operation, and push the result
+        else {
+            int operand2 = pop();
+            int operand1 = pop();
+            switch (ch) {
+                case '+':
+                    push(operand1 + operand2);
+                    break;
+                case '-':
+                    push(operand1 - operand2);
+                    break;
+                case '*':
+                    push(operand1 * operand2);
+                    break;
+                case '/':
+                    if (operand2 == 0) {
+                        printf("Division by zero error\n");
+                        exit(1);
+                    }
+                    push(operand1 / operand2);
+                    break;
+                default:
+                    printf("Invalid operator: %c\n", ch);
+                    exit(1);
+            }
+        }
+    }
+
+    // The result of the expression will be at the top of the stack
+    return pop();
 }
-int main()
-{
- int i;
- char postfix[POSTFIXSIZE];
- printf("operators available are(*, /, +, -) and operand is single digit");
- printf(" \nEnter postfix expression ending with ')'\n");
- for (i = 0; i <= POSTFIXSIZE - 1; i++) {
- scanf("%c", &postfix[i]);
- if (postfix[i] == ')')
- {
- break;
- }
- }
- EvalPostfix(postfix);
- return 0;
+
+int main() {
+    char expression[MAX];
+
+    printf("Enter a postfix expression (e.g., 23*54*+): ");
+    scanf("%s", expression);
+
+    int result = evaluatePostfix(expression);
+    printf("The result of the postfix expression is: %d\n", result);
+
+    return 0;
 }
