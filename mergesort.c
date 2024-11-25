@@ -1,90 +1,93 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-// Function to display the array
-void display(int a[], int n) {
+void printArray(int *A, int n) {
     for (int i = 0; i < n; i++) {
-        printf("%d ", a[i]);
+        printf("%d ", A[i]);
     }
     printf("\n");
 }
 
-// Function to merge two sorted subarrays
-void merge(int A[], int low, int mid, int high) {
-    int i = low;      // Starting index for the left subarray
-    int j = mid + 1;  // Starting index for the right subarray
-    int k = 0;        // Starting index for the temporary array
-    int b[high - low + 1]; // Temporary array
+void merge(int A[], int mid, int low, int high) {
+    int i, j, k, B[100];
+    i = low;
+    j = mid + 1;
+    k = low;
 
-    // Merge the two subarrays into b[]
     while (i <= mid && j <= high) {
-        if (A[i] <= A[j]) {
-            b[k++] = A[i++];
+        if (A[i] < A[j]) {
+            B[k] = A[i];
+            i++;
+            k++;
         } else {
-            b[k++] = A[j++];
+            B[k] = A[j];
+            j++;
+            k++;
         }
     }
-
-    // Copy any remaining elements from the left subarray
     while (i <= mid) {
-        b[k++] = A[i++];
+        B[k] = A[i];
+        k++;
+        i++;
     }
-
-    // Copy any remaining elements from the right subarray
     while (j <= high) {
-        b[k++] = A[j++];
+        B[k] = A[j];
+        k++;
+        j++;
+    }
+    for (int i = low; i <= high; i++) {
+        A[i] = B[i];
     }
 
-    // Copy the sorted elements back into the original array
-    for (i = low, k = 0; i <= high; i++, k++) {
-        A[i] = b[k];
-    }
+    // Immediate output after merging
+    printf("After merging [%d-%d]: ", low, high);
+    printArray(A, high + 1);
 }
 
-// Function to implement merge sort
-void merge_sort(int A[], int low, int high) {
-    if (low < high) { // Base case
-        int mid = (low + high) / 2;
-
-        // Recursively sort the left and right subarrays
-        merge_sort(A, low, mid);
-        merge_sort(A, mid + 1, high);
-
-        // Merge the sorted subarrays
-        merge(A, low, mid, high);
-
-        // Display after merging for debug
-        printf("After merging (%d to %d): ", low, high);
-        display(A, high + 1); // Passing full array length to display
+void mergeSort(int A[], int low, int high) {
+    int mid;
+    if (low < high) {
+        mid = (low + high) / 2;
+        mergeSort(A, low, mid);
+        mergeSort(A, mid + 1, high);
+        merge(A, mid, low, high);
     }
 }
 
 int main() {
-    int A[] = {45, 6, 78, 5, 71, 9, 16, 2};
-    int n = sizeof(A) / sizeof(A[0]);
+    int A[100], n;
+
+    // Taking array input from the user
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter the elements of the array: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &A[i]);
+    }
 
     printf("Original Array: ");
-    display(A, n);
+    printArray(A, n);
 
-    // Sort the array
-    merge_sort(A, 0, n - 1);
+    mergeSort(A, 0, n - 1);
 
     printf("Sorted Array: ");
-    display(A, n);
+    printArray(A, n);
 
     return 0;
 }
 
-//hai example maine uder-define likha hai hame array input from user lena hai..............
-//to keep it simple to understand maine yaha pe example use kiya hai....
+//isme maine user se input liya hai...
+//insertion sort ka khud dekhlo.........
 
-// output-
-// Original Array: 45 6 78 5 71 9 16 2 
-// After merging (0 to 1): 6 45 78 5 71 9 16 2 
-// After merging (2 to 3): 6 45 5 78 71 9 16 2 
-// After merging (0 to 3): 5 6 45 78 71 9 16 2 
-// After merging (4 to 5): 5 6 45 78 9 71 16 2 
-// After merging (6 to 7): 5 6 45 78 9 71 2 16 
-// After merging (4 to 7): 5 6 45 78 2 9 16 71 
-// After merging (0 to 7): 2 5 6 9 16 45 71 78 
-// Sorted Array: 2 5 6 9 16 45 71 78
+// output:-
+// Enter the number of elements: 7
+// Enter the elements of the array: 9 1 4 14 4 15 6
+
+// Original Array: 9 1 4 14 4 15 6
+// After merging [0-1]: 1 9 4 14 4 15 6
+// After merging [2-3]: 1 9 4 14 4 15 6
+// After merging [0-3]: 1 4 9 14 4 15 6
+// After merging [4-5]: 1 4 9 14 4 15 6
+// After merging [4-6]: 1 4 9 14 4 6 15
+// After merging [0-6]: 1 4 4 6 9 14 15
+// Sorted Array: 1 4 4 6 9 14 15
