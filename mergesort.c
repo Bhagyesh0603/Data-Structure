@@ -76,6 +76,7 @@ int main() {
 }
 
 //hai example maine uder-define likha hai hame array input from user lena hai..............
+//to keep it simple to understand maine yaha pe example use kiya hai....
 
 // output-
 // Original Array: 45 6 78 5 71 9 16 2 
